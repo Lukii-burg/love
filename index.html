@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f2dbe1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+  <title>Do You Love Me?</title>
+  <style>
+    :root{
+      --bg1:#f6e7ea;
+      --bg2:#f2dbe1;
+      --card:#e9c0c4;
+      --card2:#e2b2b8;
+      --text:#2b2b2b;
+      --yes:#e06a73;
+      --yesHover:#d85b65;
+      --shadow: 0 18px 45px rgba(0,0,0,.15);
+      --radius:18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html{
+      height:100%;
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
+    body{
+      margin:0;
+      min-height:100vh;
+      min-height:100svh;
+      min-height:100dvh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      overflow:hidden;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      background-color: var(--bg2);
+      background:
+        radial-gradient(1200px 700px at 50% 20%, var(--bg1), var(--bg2));
+    }
+
+    /* floating tiny hearts background */
+    .bg-hearts{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.45;
+      overflow:hidden;
+    }
+    .bg-hearts span{
+      position:absolute;
+      font-size:14px;
+      animation: floatUp linear infinite;
+      filter: blur(.1px);
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(110vh) translateX(0) rotate(0deg); opacity:0; }
+      10%{ opacity:1; }
+      to{ transform: translateY(-15vh) translateX(40px) rotate(12deg); opacity:0; }
+    }
+
+    .wrap{
+      min-height:100vh;
+      min-height:100svh;
+      min-height:100dvh;
+      display:grid;
+      place-items:center;
+      padding:
+        calc(24px + env(safe-area-inset-top, 0px))
+        calc(16px + env(safe-area-inset-right, 0px))
+        calc(24px + env(safe-area-inset-bottom, 0px))
+        calc(16px + env(safe-area-inset-left, 0px));
+    }
+
+    .card{
+      width:min(360px, 92vw);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px 18px 16px;
+      text-align:center;
+      position:relative;
+    }
+
+    .art{
+      width:170px;
+      height:170px;
+      margin:0 auto 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.35);
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    /* Replace this emoji art with your own image if you want */
+    .art .emoji{
+      font-size:84px;
+      line-height:1;
+      transform: translateY(3px);
+      filter: drop-shadow(0 10px 10px rgba(0,0,0,.12));
+    }
+    .mini-hearts{
+      position:absolute;
+      top:10px;
+      left:0;
+      right:0;
+      font-size:16px;
+      opacity:.9;
+    }
+
+    h1{
+      font-size:18px;
+      margin:8px 0 14px;
+      letter-spacing:.2px;
+    }
+
+    .actions{
+      position:relative;
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action: manipulation;
+    }
+
+    button{
+      border:0;
+      padding:12px 18px;
+      border-radius: 12px;
+      min-height:44px;
+      font-weight:650;
+      cursor:pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      transition: transform .15s ease, background .2s ease, opacity .2s ease;
+    }
+    button:active{ transform: scale(.97); }
+
+    #yesBtn{
+      background: var(--yes);
+      color:#fff;
+      min-width:92px;
+    }
+    #yesBtn:hover{ background: var(--yesHover); }
+
+    /* "No" button will be moved around inside .actions */
+    #noBtn{
+      background: rgba(255,255,255,.55);
+      color:#333;
+      border:1px solid rgba(255,255,255,.35);
+      min-width:92px;
+      position:absolute; /* allows jump */
+      right:8px;
+      top:50%;
+      transform: translateY(-50%);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .note{
+      font-size:12px;
+      opacity:.75;
+      margin-top:8px;
+    }
+
+    /* Success overlay */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.18);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding:24px 16px;
+    }
+    .overlay.show{ display:grid; }
+
+    .success{
+      width:min(420px, 94vw);
+      background: rgba(255,255,255,.82);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding:20px 18px 16px;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .success .big{
+      font-size:70px;
+      margin:6px 0 6px;
+    }
+    .success h2{
+      margin:0;
+      font-size:22px;
+    }
+    .success p{
+      margin:8px 0 14px;
+      opacity:.85;
+    }
+    .close{
+      background: rgba(0,0,0,.08);
+      box-shadow:none;
+    }
+
+    /* Confetti hearts */
+    .confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .confetti .h{
+      position:absolute;
+      top:-10vh;
+      font-size:18px;
+      animation: fall 1.8s linear forwards;
+      opacity:.95;
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,.12));
+    }
+    @keyframes fall{
+      to{
+        transform: translateY(120vh) rotate(20deg);
+        opacity:0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- background hearts -->
+  <div class="bg-hearts" id="bgHearts" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <section class="card" role="dialog" aria-label="Love question">
+      <div class="art">
+        <div class="mini-hearts" aria-hidden="true">&#x2661; &#x2665; &#x2661;</div>
+        <div class="emoji" aria-hidden="true">&#x1F496;</div>
+      </div>
+
+      <h1>Do you love me?</h1>
+
+      <div class="actions" id="actions">
+        <button id="yesBtn" type="button">Yes</button>
+        <button id="noBtn" type="button">No</button>
+      </div>
+
+      <div class="note">Tip: On phone, tapping "No" makes it run away.</div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay" role="dialog" aria-label="Success message">
+    <div class="success">
+      <div class="big" aria-hidden="true">&#x1F496;</div>
+      <h2>Love you too!</h2>
+      <p>You just made my day.</p>
+      <button class="close" id="closeBtn" type="button">Close</button>
+    </div>
+  </div>
+
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+  <script>
+    // Create floating background hearts
+    const bg = document.getElementById('bgHearts');
+    const heartChars = ["\u2661", "\u2665", "\u2764", "\u2763"];
+    const bgCount = 28;
+
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+    for(let i=0;i<bgCount;i++){
+      const s = document.createElement('span');
+      s.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      s.style.left = rand(0, 100) + "vw";
+      s.style.animationDuration = rand(6, 14) + "s";
+      s.style.animationDelay = rand(0, 10) + "s";
+      s.style.fontSize = rand(10, 18) + "px";
+      bg.appendChild(s);
+    }
+
+    const actions = document.getElementById('actions');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closeBtn');
+    const confetti = document.getElementById('confetti');
+
+    // Keep "No" inside the actions area
+    function moveNoButton(){
+      const pad = 6;
+      const a = actions.getBoundingClientRect();
+      const b = noBtn.getBoundingClientRect();
+
+      const maxX = a.width - b.width - pad;
+      const maxY = a.height - b.height - pad;
+
+      const x = Math.max(pad, rand(pad, maxX));
+      const y = Math.max(pad, rand(pad, maxY));
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.right = "auto";
+      noBtn.style.transform = "none";
+    }
+
+    // Desktop: hover / Mobile: touch
+    noBtn.addEventListener('pointerenter', moveNoButton);
+    noBtn.addEventListener('pointerdown', (e) => {
+      // Prevent click on mobile from selecting it
+      e.preventDefault();
+      moveNoButton();
+    });
+
+    // Also move it once at start (so it isn't always at the same spot)
+    window.addEventListener('load', () => {
+      // put it somewhere random inside actions
+      noBtn.style.left = "auto";
+      noBtn.style.top = "50%";
+      noBtn.style.right = "8px";
+      noBtn.style.transform = "translateY(-50%)";
+      setTimeout(moveNoButton, 250);
+    });
+
+    // Confetti hearts burst
+    function burstHearts(){
+      const count = 26;
+      for(let i=0;i<count;i++){
+        const h = document.createElement('div');
+        h.className = 'h';
+        h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+        h.style.left = rand(0, 100) + "vw";
+        h.style.fontSize = rand(14, 28) + "px";
+        h.style.animationDuration = rand(1.5, 2.6) + "s";
+        h.style.transform = `translateY(${rand(-10, 0)}vh) rotate(${rand(-20, 20)}deg)`;
+        confetti.appendChild(h);
+
+        // cleanup
+        setTimeout(() => h.remove(), 3000);
+      }
+    }
+
+    yesBtn.addEventListener('click', () => {
+      overlay.classList.add('show');
+      burstHearts();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('show');
+    });
+
+    // Tap outside closes (optional)
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) overlay.classList.remove('show');
+    });
+  </script>
+</body>
+</html>
