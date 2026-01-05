@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f2dbe1" />
+  <meta name="theme-color" content="#f7b7c8" />
   <meta name="color-scheme" content="light" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -16,15 +16,27 @@
   <title>Do You Love Me?</title>
   <style>
     :root{
-      --bg1:#f6e7ea;
-      --bg2:#f2dbe1;
-      --card:#e9c0c4;
-      --card2:#e2b2b8;
-      --text:#2b2b2b;
-      --yes:#e06a73;
-      --yesHover:#d85b65;
-      --shadow: 0 18px 45px rgba(0,0,0,.15);
+      --pink-1:#f7b7c8;
+      --pink-2:#f08aa4;
+      --blue-1:#a6d1ea;
+      --blue-2:#6fa7c9;
+      --brown-1:#6c4433;
+      --brown-2:#e3c4b3;
+      --bg1:var(--pink-1);
+      --bg2:var(--blue-1);
+      --card:#f7d6e0;
+      --card2:#e6c2ae;
+      --text:var(--brown-1);
+      --yes:var(--pink-2);
+      --yesHover:#e97695;
+      --no:var(--blue-2);
+      --noHover:#5a98bc;
+      --shadow: 0 18px 45px rgba(79, 46, 31, .18);
       --radius:18px;
+      --btn-pad-y:12px;
+      --btn-pad-x:18px;
+      --btn-min-h:44px;
+      --btn-min-w:92px;
     }
 
     *{ box-sizing:border-box; }
@@ -38,14 +50,16 @@
       min-height:100vh;
       min-height:100svh;
       min-height:100dvh;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, "Times New Roman", serif;
       color:var(--text);
       overflow:hidden;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       background-color: var(--bg2);
       background:
-        radial-gradient(1200px 700px at 50% 20%, var(--bg1), var(--bg2));
+        radial-gradient(900px 600px at 15% 5%, rgba(255,255,255,.6), transparent 60%),
+        radial-gradient(1000px 700px at 85% 15%, var(--blue-1), transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2) 60%, var(--brown-2) 100%);
     }
 
     /* floating tiny hearts background */
@@ -55,6 +69,7 @@
       pointer-events:none;
       opacity:.45;
       overflow:hidden;
+      z-index:0;
     }
     .bg-hearts span{
       position:absolute;
@@ -86,9 +101,11 @@
       background: linear-gradient(180deg, var(--card), var(--card2));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
+      border: 1px solid rgba(108, 68, 51, .12);
       padding:18px 18px 16px;
       text-align:center;
       position:relative;
+      z-index:1;
     }
 
     .art{
@@ -96,7 +113,8 @@
       height:170px;
       margin:0 auto 10px;
       border-radius: 14px;
-      background: rgba(255,255,255,.35);
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(108, 68, 51, .12);
       display:grid;
       place-items:center;
       position:relative;
@@ -138,36 +156,37 @@
 
     button{
       border:0;
-      padding:12px 18px;
+      padding: var(--btn-pad-y) var(--btn-pad-x);
       border-radius: 12px;
-      min-height:44px;
+      min-height: var(--btn-min-h);
       font-weight:650;
       cursor:pointer;
       box-shadow: 0 10px 20px rgba(0,0,0,.12);
       transition: transform .15s ease, background .2s ease, opacity .2s ease;
+    }
+    .actions button{
+      min-width: var(--btn-min-w);
     }
     button:active{ transform: scale(.97); }
 
     #yesBtn{
       background: var(--yes);
       color:#fff;
-      min-width:92px;
     }
     #yesBtn:hover{ background: var(--yesHover); }
 
-    /* "No" button will be moved around inside .actions */
+    /* "No" button runs around the screen */
     #noBtn{
-      background: rgba(255,255,255,.55);
-      color:#333;
+      background: var(--no);
+      color:#fff;
       border:1px solid rgba(255,255,255,.35);
-      min-width:92px;
-      position:absolute; /* allows jump */
-      right:8px;
+      position:fixed;
+      left:50%;
       top:50%;
-      transform: translateY(-50%);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      transform: translate(-50%, -50%);
+      z-index:3;
     }
+    #noBtn:hover{ background: var(--noHover); }
 
     .note{
       font-size:12px;
@@ -185,6 +204,7 @@
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       padding:24px 16px;
+      z-index:6;
     }
     .overlay.show{ display:grid; }
 
@@ -221,6 +241,7 @@
       inset:0;
       pointer-events:none;
       overflow:hidden;
+      z-index:7;
     }
     .confetti .h{
       position:absolute;
@@ -242,6 +263,30 @@
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 420px){
+      :root{
+        --btn-pad-y:9px;
+        --btn-pad-x:14px;
+        --btn-min-h:38px;
+        --btn-min-w:74px;
+      }
+      .card{
+        width:min(330px, 94vw);
+        padding:16px 14px 12px;
+      }
+      .art{
+        width:150px;
+        height:150px;
+      }
+      h1{
+        font-size:17px;
+      }
+      .actions{
+        height:48px;
+        gap:8px;
       }
     }
   </style>
@@ -284,13 +329,16 @@
     // Create floating background hearts
     const bg = document.getElementById('bgHearts');
     const heartChars = ["\u2661", "\u2665", "\u2764", "\u2763"];
+    const heartColors = ["#f08aa4", "#6fa7c9", "#8c5a45"];
     const bgCount = 28;
 
     function rand(min, max){ return Math.random() * (max - min) + min; }
+    function pick(list){ return list[Math.floor(Math.random() * list.length)]; }
 
     for(let i=0;i<bgCount;i++){
       const s = document.createElement('span');
       s.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      s.style.color = pick(heartColors);
       s.style.left = rand(0, 100) + "vw";
       s.style.animationDuration = rand(6, 14) + "s";
       s.style.animationDelay = rand(0, 10) + "s";
@@ -298,24 +346,50 @@
       bg.appendChild(s);
     }
 
-    const actions = document.getElementById('actions');
     const noBtn = document.getElementById('noBtn');
     const yesBtn = document.getElementById('yesBtn');
     const overlay = document.getElementById('overlay');
     const closeBtn = document.getElementById('closeBtn');
     const confetti = document.getElementById('confetti');
 
-    // Keep "No" inside the actions area
+    function getViewport(){
+      const vv = window.visualViewport;
+      if(vv){
+        return { width: vv.width, height: vv.height };
+      }
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
+
+    function rectsOverlap(a, b){
+      return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+    }
+
+    // Let "No" move anywhere on the screen without covering "Yes"
     function moveNoButton(){
-      const pad = 6;
-      const a = actions.getBoundingClientRect();
+      const pad = 10;
+      const view = getViewport();
       const b = noBtn.getBoundingClientRect();
+      const yesRect = yesBtn.getBoundingClientRect();
 
-      const maxX = a.width - b.width - pad;
-      const maxY = a.height - b.height - pad;
+      const maxX = Math.max(pad, view.width - b.width - pad);
+      const maxY = Math.max(pad, view.height - b.height - pad);
 
-      const x = Math.max(pad, rand(pad, maxX));
-      const y = Math.max(pad, rand(pad, maxY));
+      let x = rand(pad, maxX);
+      let y = rand(pad, maxY);
+      let tries = 0;
+
+      while(tries < 12){
+        const candidate = {
+          left: x,
+          right: x + b.width,
+          top: y,
+          bottom: y + b.height
+        };
+        if(!rectsOverlap(candidate, yesRect)) break;
+        x = rand(pad, maxX);
+        y = rand(pad, maxY);
+        tries++;
+      }
 
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
@@ -333,13 +407,12 @@
 
     // Also move it once at start (so it isn't always at the same spot)
     window.addEventListener('load', () => {
-      // put it somewhere random inside actions
-      noBtn.style.left = "auto";
-      noBtn.style.top = "50%";
-      noBtn.style.right = "8px";
-      noBtn.style.transform = "translateY(-50%)";
       setTimeout(moveNoButton, 250);
     });
+    window.addEventListener('resize', moveNoButton);
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize', moveNoButton);
+    }
 
     // Confetti hearts burst
     function burstHearts(){
@@ -348,6 +421,7 @@
         const h = document.createElement('div');
         h.className = 'h';
         h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+        h.style.color = pick(heartColors);
         h.style.left = rand(0, 100) + "vw";
         h.style.fontSize = rand(14, 28) + "px";
         h.style.animationDuration = rand(1.5, 2.6) + "s";
